@@ -489,3 +489,19 @@ MIT — do whatever you want. See [LICENSE](LICENSE).
 ## 🏢 About
 
 Built by [Manak-hash](https://github.com/Manak-hash) · An [OmniRise](https://omnirise.dev) project.
+
+---
+
+## Amaji fork
+
+Fork of [LinkBreeze](https://github.com/Manak-hash/LinkBreeze) for amajiclothing.com.
+
+Adds a **shoppable photo grid** layout for the public page, so link cards render as square
+image tiles (linkin.bio style) rather than a vertical list. Upstream behaviour is unchanged by
+default.
+
+- `themes.link_layout` — `list` (upstream default) or `grid`
+- `themes.grid_columns` — tiles across, default 3
+- Migration `0022_amaji_grid_layout.sql`
+- Grid styling lives in `src/app/globals.css` under `.lb-link-grid`, because card markup is
+  built as an HTML string in `build-link-card.ts` rather than as JSX.

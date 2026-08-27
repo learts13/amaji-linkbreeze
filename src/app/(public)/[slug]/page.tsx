@@ -314,6 +314,18 @@ export default async function PublicPage({ params }: PageProps) {
                     alignment={themeInput.alignment as "left" | "center" | "right" | undefined}
                   />
                 ) : null}
+                <div
+                  className={themeInput.linkLayout === "grid" ? "lb-link-grid" : undefined}
+                  style={
+                    themeInput.linkLayout === "grid"
+                      ? ({
+                          display: "grid",
+                          gridTemplateColumns: `repeat(${themeInput.gridColumns || 3}, minmax(0, 1fr))`,
+                          gap: "5px",
+                        } as React.CSSProperties)
+                      : undefined
+                  }
+                >
                 {group.links.map((link, li) =>
                   link.type === "embed" ? (
                     <EmbedWidget
@@ -335,6 +347,7 @@ export default async function PublicPage({ params }: PageProps) {
                     />
                   ),
                 )}
+                </div>
               </section>
             ))
           ) : (

@@ -139,6 +139,10 @@ export const themes = sqliteTable("themes", {
 
   // Card
   linkStyle: text("link_style").notNull().default("glass"), // rounded, sharp, glass, pill, outline, neon
+  // Amaji: "grid" lays rich/image cards out as a shoppable photo grid (linkin.bio style)
+  // instead of a vertical list. "list" is upstream behaviour.
+  linkLayout: text("link_layout").notNull().default("list"), // list | grid
+  gridColumns: integer("grid_columns").notNull().default(3),
   animationType: text("animation_type").notNull().default("lift"), // lift, scale, none
   radius: text("radius").notNull().default("auto"),
   buttonSize: text("button_size").notNull().default("md"), // sm, md, lg

@@ -75,6 +75,9 @@ export interface ThemeInput {
 
   // Card
   linkStyle?: string | null;
+  /** Amaji: "grid" renders cards as a shoppable photo grid. */
+  linkLayout?: string | null;
+  gridColumns?: number | null;
   animationType?: string | null;
   radius?: string | null;
   buttonSize?: string | null;

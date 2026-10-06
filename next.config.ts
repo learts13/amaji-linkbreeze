@@ -64,6 +64,7 @@ function buildCsp(): { key: string; value: string } {
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}${extraScriptSrc ? ` ${extraScriptSrc}` : ""}`,
       "style-src 'self' 'unsafe-inline'",
+      `script-src 'self' 'unsafe-inline' https://livestats.learts.dev${isDev ? " 'unsafe-eval'" : ""}${extraScriptSrc ? ` ${extraScriptSrc}` : ""}`,
       "img-src 'self' data: blob: https:",
       // Media (background videos) — same trust model as img-src: operators
       // hotlink from arbitrary https CDNs (Mixkit, etc.). Without this,
@@ -71,7 +72,7 @@ function buildCsp(): { key: string; value: string } {
       // gradient fallback paints instead.
       "media-src 'self' https: blob:",
       "font-src 'self' data:",
-      "connect-src 'self'",
+      "connect-src 'self' https://livestats.learts.dev",
       // Location popup maps (#93): the keyless embed lives on maps.google.com
       // but redirects to www.google.com to serve tiles — both must be allowed.
       "frame-src 'self' https://www.youtube-nocookie.com https://open.spotify.com https://player.vimeo.com https://w.soundcloud.com https://bandcamp.com https://maps.google.com https://www.google.com",

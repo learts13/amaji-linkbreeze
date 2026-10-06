@@ -79,7 +79,7 @@ export function EmailCapture({ consentText }: { consentText?: string | null }) {
             borderRadius: "var(--lb-card-radius)",
           }}
         >
-          {pending ? "..." : "Subscribe"}
+          {pending ? "..." : "Inscrever-se"}
         </button>
       </div>
       <label

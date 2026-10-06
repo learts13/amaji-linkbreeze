@@ -137,7 +137,7 @@ function buildContentRow(link: LinkRow): string {
 
   // Featured links get a "Featured" badge instead of the small dot
   const featuredBadge = featured
-    ? `<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--lb-accent);margin-bottom:4px">&#9733; Featured</span>`
+    ? `<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--lb-accent);margin-bottom:4px">&#9733; Em destaque</span>`
     : "";
 
   const description = link.description

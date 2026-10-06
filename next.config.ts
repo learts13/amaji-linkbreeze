@@ -62,7 +62,6 @@ function buildCsp(): { key: string; value: string } {
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}${extraScriptSrc ? ` ${extraScriptSrc}` : ""}`,
       "style-src 'self' 'unsafe-inline'",
       `script-src 'self' 'unsafe-inline' https://livestats.learts.dev${isDev ? " 'unsafe-eval'" : ""}${extraScriptSrc ? ` ${extraScriptSrc}` : ""}`,
       "img-src 'self' data: blob: https:",

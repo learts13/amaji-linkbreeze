@@ -57,8 +57,8 @@ export function EmailCapture({ consentText }: { consentText?: string | null }) {
             name="email"
             required
             maxLength={320}
-            placeholder="your@email.com"
-            aria-label="Email address"
+            placeholder="Seu e-mail"
+            aria-label="Endereço de e-mail"
             className="lb-pixel-input lb-pixel-clip w-full border bg-white/5 px-4 py-2.5 text-sm outline-none backdrop-blur-sm transition-colors focus:border-[var(--lb-accent)]"
             style={{
               color: "var(--lb-text)",

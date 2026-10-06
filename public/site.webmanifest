@@ -1,6 +1,6 @@
 {
-  "name": "LinkBreeze",
-  "short_name": "LinkBreeze",
+  "name": "links.learts.dev",
+  "short_name": "links.learts.dev",
   "description": "Self-hosted link-in-bio platform with analytics, QR codes, and themes.",
   "start_url": "/?source=pwa",
   "scope": "/",

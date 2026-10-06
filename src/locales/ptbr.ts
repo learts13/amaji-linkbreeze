@@ -46,7 +46,7 @@ const ptbr: Messages = {
   },
   "login": {
     "title": "Entrar",
-    "subtitle": "Entre para gerenciar sua página no LinkBreeze",
+    "subtitle": "Entre para gerenciar sua página no Links Learts",
     "username": "Nome de usuário",
     "password": "Senha",
     "submit": "Entrar",

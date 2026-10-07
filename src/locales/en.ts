@@ -16,7 +16,7 @@
 
 const en = {
   meta: {
-    adminTitle: "LinkBreeze — Admin",
+    adminTitle: "Links Learts - Admin",
     // `machine` until a native reviewer signs off; picker shows a beta marker.
     status: "reviewed" as const,
   },
@@ -52,7 +52,7 @@ const en = {
     signOut: "Sign out",
     pagesSection: "Pages",
     demoBannerLead: "Live demo.",
-    demoBannerVisit: "Visit LinkBreeze",
+    demoBannerVisit: "Visit Links Learts",
     demoBannerDeploy: "Deploy your own instance",
     livePreview: "Live preview",
   },
@@ -78,7 +78,7 @@ const en = {
     chooseStartingPoint: "Choose a starting point. Customize everything later.",
 
     importYourExistingPage: "Import your existing page",
-    welcomeTitle: "Welcome to LinkBreeze",
+    welcomeTitle: "Welcome to Links Learts",
     createAdminTitle: "Create your admin account",
     createAccount: "Create account",
     creatingAccount: "Creating account…",

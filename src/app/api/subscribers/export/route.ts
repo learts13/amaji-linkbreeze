@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { getAllSubscribers } from "@/server/queries";
+import { getAllSubscribers, getPageById } from "@/server/queries";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,12 +13,18 @@ function csvCell(v: unknown): string {
 }
 
 /** CSV export of all subscriber emails. Auth-required. */
-export async function GET() {
+export async function GET(request: Request) {
   if (!(await getSession())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const rows = await getAllSubscribers();
+  const url = new URL(request.url);
+  const pageId = Number(url.searchParams.get("pageId"));
+  if (!Number.isInteger(pageId) || pageId < 1 || !(await getPageById(pageId))) {
+    return NextResponse.json({ error: "Invalid page" }, { status: 400 });
+  }
+
+  const rows = await getAllSubscribers(pageId);
   const lines = rows.map((r) =>
     [r.email, r.createdAt, r.consentAt ?? "", r.consentText ?? ""]
       .map(csvCell)

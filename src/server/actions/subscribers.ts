@@ -54,7 +54,7 @@ export async function subscribe(formData: FormData): Promise<ActionResult> {
     (await getPageConsentText(page.id)) || DEFAULT_CONSENT_TEXT;
 
   try {
-    await addSubscriber(parsed.data.email.toLowerCase().trim(), consentText);
+    await addSubscriber(parsed.data.email.toLowerCase().trim(), page.id, consentText);
   } catch {
     // Most likely a duplicate — still return success so we don't leak
     // whether an email is already subscribed.

@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
 // ─── Users ─────────────────────────────────────────────
@@ -220,11 +220,12 @@ export const analyticsClicks = sqliteTable("analytics_clicks", {
 // ─── Subscribers (email capture) ──────────────────────
 export const subscribers = sqliteTable("subscribers", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  email: text("email").notNull().unique(),
+  email: text("email").notNull(),
+  pageId: integer("page_id").references(() => pages.id, { onDelete: "set null" }),
   createdAt: text("created_at").notNull().default(sql`(datetime('now'))`),
   consentAt: text("consent_at"),
   consentText: text("consent_text"),
-});
+}, (table) => [uniqueIndex("subscribers_page_email_unique").on(table.pageId, table.email)]);
 
 // ─── Meta (internal) ──────────────────────────────────
 export const meta = sqliteTable("_meta", {

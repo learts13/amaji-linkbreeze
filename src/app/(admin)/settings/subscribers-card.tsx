@@ -26,9 +26,11 @@ import type { SubscriberRow } from "@/server/queries";
 export function SubscribersCard({
   subscribers,
   emailCaptureEnabled,
+  pageId,
 }: {
   subscribers: SubscriberRow[];
   emailCaptureEnabled: boolean;
+  pageId: number;
 }) {
   const t = useTranslations("settings.data");
   const locale = useLocale();
@@ -44,7 +46,7 @@ export function SubscribersCard({
     setClearPending(true);
     setClearMsg(null);
     try {
-      const res = await fetch("/api/subscribers/clear", { method: "DELETE" });
+      const res = await fetch(`/api/subscribers/clear?pageId=${pageId}`, { method: "DELETE" });
       if (res.ok) {
         setClearMsg("All subscribers cleared.");
         router.refresh();
@@ -106,7 +108,7 @@ export function SubscribersCard({
         <div className="flex flex-wrap items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- file download, not page navigation */}
           <a
-            href="/api/subscribers/export"
+            href={`/api/subscribers/export?pageId=${pageId}`}
             className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-muted"
           >
             <Download className="size-4" />{t("exportCsv")}</a>

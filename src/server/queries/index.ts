@@ -1123,25 +1123,27 @@ export type SubscriberRow = typeof subscribers.$inferSelect;
 
 export async function addSubscriber(
   email: string,
+  pageId: number,
   consentText?: string,
 ): Promise<void> {
   const consentAt = new Date().toISOString();
   await db.insert(subscribers).values({
     email,
+    pageId,
     consentAt: consentText ? consentAt : null,
     consentText: consentText ?? null,
   });
 }
 
-export async function getSubscriberCount(): Promise<number> {
-  const rows = await db.select({ c: sql<number>`count(*)` }).from(subscribers);
+export async function getSubscriberCount(pageId: number): Promise<number> {
+  const rows = await db.select({ c: sql<number>`count(*)` }).from(subscribers).where(eq(subscribers.pageId, pageId));
   return rows[0]?.c ?? 0;
 }
 
-export async function getAllSubscribers(): Promise<SubscriberRow[]> {
-  return db.select().from(subscribers).orderBy(desc(subscribers.createdAt));
+export async function getAllSubscribers(pageId: number): Promise<SubscriberRow[]> {
+  return db.select().from(subscribers).where(eq(subscribers.pageId, pageId)).orderBy(desc(subscribers.createdAt));
 }
 
-export async function clearSubscribers(): Promise<void> {
-  db.delete(subscribers).run();
+export async function clearSubscribers(pageId: number): Promise<void> {
+  db.delete(subscribers).where(eq(subscribers.pageId, pageId)).run();
 }

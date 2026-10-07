@@ -46,7 +46,7 @@ export function EmailCapture({ pageId, consentText }: {
         className="mb-2 mt-6 text-center text-sm"
         style={{ color: "var(--lb-accent)" }}
       >
-        Pronto! Seu e-mail foi cadastrado.
+        Thanks! You&apos;re on the list.
       </p>
     );
   }

@@ -44,6 +44,7 @@ describe("subscribe", () => {
     expect(res.success).toBe(true);
     expect(mocks.addSubscriber).toHaveBeenCalledWith(
       "user@example.com",
+      1,
       expect.any(String),
     );
   });
@@ -52,6 +53,7 @@ describe("subscribe", () => {
     await subscribe(fd({ email: "User@Example.COM", consent: "on" }));
     expect(mocks.addSubscriber).toHaveBeenCalledWith(
       "user@example.com",
+      1,
       expect.any(String),
     );
   });
@@ -84,6 +86,7 @@ describe("subscribe", () => {
     await subscribe(fd({ email: "user@example.com", consent: "on" }));
     expect(mocks.addSubscriber).toHaveBeenCalledWith(
       "user@example.com",
+      1,
       "Custom consent text",
     );
     expect(mocks.getSetting).toHaveBeenCalledWith("page:1:consentText");
@@ -94,6 +97,7 @@ describe("subscribe", () => {
     await subscribe(fd({ email: "user@example.com", consent: "on" }));
     expect(mocks.addSubscriber).toHaveBeenCalledWith(
       "user@example.com",
+      1,
       expect.stringContaining("I agree to receive emails"),
     );
   });
@@ -117,6 +121,6 @@ describe("subscription page validation", () => {
     mocks.getPageById.mockResolvedValueOnce({ id: 2, isPublished: true, emailCapture: true });
     mocks.getSetting.mockImplementation(async (key) => key === "page:2:consentText" ? "Lotto consent" : "Fiscal consent");
     await subscribe(fd({ pageId: "2", email: "user@example.com", consent: "on", consentText: "Forged" }));
-    expect(mocks.addSubscriber).toHaveBeenCalledWith("user@example.com", "Lotto consent");
+    expect(mocks.addSubscriber).toHaveBeenCalledWith("user@example.com", 2, "Lotto consent");
   });
 });

@@ -54,7 +54,7 @@ export default async function SettingsPage({
     isUpdateCheckEnabled(),
     getAnalyticsRetentionDays(),
     activePage ? getPageConsentText(activePage.id) : Promise.resolve(null),
-    getAllSubscribers(),
+    activePage ? getAllSubscribers(activePage.id) : Promise.resolve([]),
     getSetting("searchEngineHidden"),
   ]);
 
@@ -107,7 +107,7 @@ export default async function SettingsPage({
           appearance: (
             <div className="flex flex-col gap-4">
               <AppearanceTab
-                pageId={activePage?.id}
+                pageId={activePage?.id ?? 0}
                 customCss={activePage?.customCss || ""}
                 faviconUrl={activePage?.faviconUrl || ""}
                 themes={themes}
@@ -142,6 +142,7 @@ export default async function SettingsPage({
               <SubscribersCard
                 subscribers={subscribers}
                 emailCaptureEnabled={activePage?.emailCapture ?? false}
+                pageId={activePage?.id}
               />
               <DataManager
                 retentionDays={String(retentionDays)}

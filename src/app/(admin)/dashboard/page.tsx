@@ -339,7 +339,7 @@ export default async function DashboardPage({
 
   // Quiet subscriber count — only when capture is on and someone subscribed.
   const subscriberCount =
-    activePage?.emailCapture ? await getSubscriberCount() : 0;
+    activePage?.emailCapture && activePage.id ? await getSubscriberCount(activePage.id) : 0;
   const viewSpark = stats.viewsPerDay.map((d) => d.views);
   const clickSpark = stats.viewsPerDay.map((d) => d.clicks);
 

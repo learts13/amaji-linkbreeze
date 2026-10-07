@@ -136,7 +136,7 @@ export function generatePrivacyPolicy(input: PrivacyTemplateInput): string {
   sections.push(
     `## Controlador dos dados`,
     ``,
-    `Esta página utiliza o LinkBreeze, uma ferramenta de página de links hospedada em servidor próprio. O proprietário da página é o controlador dos dados pessoais coletados aqui. Os desenvolvedores do LinkBreeze não têm acesso aos dados desta instalação.`,
+    `Esta página utiliza o Links Learts, uma ferramenta de página de links hospedada em servidor próprio. O proprietário da página é o controlador dos dados pessoais coletados aqui. Os desenvolvedores do Links Learts não têm acesso aos dados desta instalação.`,
     ``,
   );
 

@@ -514,13 +514,13 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 
   return {
-    title: "LinkBreeze — Self-hosted link-in-bio",
+    title: "Links Learts - Self-hosted link-in-bio",
     description:
       "Self-hosted link-in-bio platform with analytics, QR codes, and themes. The open-source Linktree alternative.",
     metadataBase: new URL(origin),
     authors: [
-      { name: "LinkBreeze", url: "https://links.learts.dev" },
-      { name: "OmniRise", url: "https://links.learts.dev" },
+      { name: "Links Learts", url: "https://links.learts.dev" },
+      { name: "Links Learts", url: "https://links.learts.dev" },
     ],
     creator: "Learts",
     publisher: "Learts",

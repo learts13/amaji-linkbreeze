@@ -425,7 +425,7 @@ export default async function DashboardPage({
         <div className="flex flex-wrap items-center gap-2">
           {subscriberCount > 0 && (
             <Link
-              href="/settings?tab=data"
+              href={`/settings?tab=data&page=${pageId}`}
               title={t("subscribersTitle")}
               className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
             >

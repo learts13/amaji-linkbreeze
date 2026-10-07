@@ -59,7 +59,7 @@ const en = {
 
   login: {
     title: "Sign in",
-    subtitle: "Sign in to manage your LinkBreeze page",
+    subtitle: "Sign in to manage your Links Learts",
     username: "Username",
     password: "Password",
     submit: "Sign in",

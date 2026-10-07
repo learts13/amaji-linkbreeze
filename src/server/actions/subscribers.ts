@@ -12,13 +12,13 @@ import {
 import { getPageConsentText } from "@/lib/page-consent";
 
 const DEFAULT_CONSENT_TEXT =
-  "I agree to receive emails and understand I can unsubscribe at any time.";
+  "Concordo em receber e-mails e entendo que posso cancelar minha inscrição a qualquer momento.";
 
 const subscribeSchema = z.object({
   pageId: z.coerce.number().int().positive(),
-  email: z.email("Please enter a valid email").max(320),
+  email: z.email("Digite um endereço de e-mail válido.").max(320),
   consent: z.string().refine((v) => v === "on" || v === "true", {
-    message: "Please accept the consent checkbox to subscribe",
+    message: "Marque a caixa de consentimento para se inscrever.",
   }),
 });
 
@@ -47,7 +47,7 @@ export async function subscribe(formData: FormData): Promise<ActionResult> {
 
   const page = await getPageById(parsed.data.pageId);
   if (!page || !page.isPublished || !page.emailCapture) {
-    return validationError("Email capture is not available for this page");
+    return validationError("A inscrição por e-mail não está disponível nesta página.");
   }
   // Resolve on the server: never trust consent text submitted by the browser.
   const consentText =

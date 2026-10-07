@@ -32,9 +32,9 @@ export const dynamic = "force-dynamic";
 export default async function SettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; tab?: string }>;
 }) {
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, tab: tabParam } = await searchParams;
 
   const [allPages, defaultPage] = await Promise.all([
     getAllPages(),
@@ -81,8 +81,9 @@ export default async function SettingsPage({
         </p>
       </div>
 
-      <SettingsTabs
-        tabs={{
+        <SettingsTabs
+          initialTab={tabParam === "data" ? "data" : undefined}
+          tabs={{
           general: (
             <GeneralTab
               pageId={activePage?.id}

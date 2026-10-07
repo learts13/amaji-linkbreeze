@@ -28,11 +28,15 @@ const TABS: Tab[] = [
 
 export function SettingsTabs({
   tabs,
+  initialTab = "general",
 }: {
   tabs: Record<string, React.ReactNode>;
+  initialTab?: string;
 }) {
   const t = useTranslations("settings.tabs");
-  const [active, setActive] = React.useState("general");
+  const [active, setActive] = React.useState(initialTab);
+
+  React.useEffect(() => setActive(initialTab), [initialTab]);
 
   return (
     <div className="flex flex-col gap-4">

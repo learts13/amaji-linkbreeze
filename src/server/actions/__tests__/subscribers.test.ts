@@ -98,7 +98,7 @@ describe("subscribe", () => {
     expect(mocks.addSubscriber).toHaveBeenCalledWith(
       "user@example.com",
       1,
-      expect.stringContaining("I agree to receive emails"),
+      expect.stringContaining("Concordo em receber e-mails"),
     );
   });
 });

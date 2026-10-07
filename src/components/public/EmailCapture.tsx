@@ -4,7 +4,7 @@ import * as React from "react";
 import { subscribe } from "@/server/actions/subscribers";
 
 const DEFAULT_CONSENT_TEXT =
-  "I agree to receive emails and understand I can unsubscribe at any time.";
+  "Concordo em receber e-mails e entendo que posso cancelar minha inscrição a qualquer momento.";
 
 /**
  * Progressive-enhancement email capture form.
@@ -46,7 +46,7 @@ export function EmailCapture({ pageId, consentText }: {
         className="mb-2 mt-6 text-center text-sm"
         style={{ color: "var(--lb-accent)" }}
       >
-       Pronto! Seu e-mail foi cadastrado.
+        Obrigado! Seu e-mail foi cadastrado.
       </p>
     );
   }

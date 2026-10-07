@@ -5,6 +5,9 @@ const mocks = vi.hoisted(() => ({
   getSession: vi.fn(async (): Promise<{ userId: number; username: string; exp: number; pv: number } | null> => ({ userId: 1, username: "admin", exp: Date.now() + 60000, pv: 1 })),
   revalidatePath: vi.fn(),
   createPage: vi.fn(async () => ({ id: 5 })),
+  updateSetting: vi.fn(async () => undefined),
+  getSetting: vi.fn(async () => null),
+  getPageById: vi.fn(async (): Promise<{ id: number; slug: string } | null> => ({ id: 1, slug: "home" })),
   updatePage: vi.fn(async () => undefined),
   deletePage: vi.fn(async () => undefined),
   getDefaultPage: vi.fn(async () => ({ id: 1, slug: "home" })),
@@ -17,6 +20,9 @@ vi.mock("@/lib/demo", () => ({ demoBlock: mocks.demoBlock }));
 vi.mock("@/server/queries", () => ({
   createPage: mocks.createPage,
   updatePage: mocks.updatePage,
+  updateSetting: mocks.updateSetting,
+  getSetting: mocks.getSetting,
+  getPageById: mocks.getPageById,
   deletePage: mocks.deletePage,
   getDefaultPage: mocks.getDefaultPage,
   getAllPages: mocks.getAllPages,
@@ -82,6 +88,44 @@ describe("updatePageAction", () => {
     mocks.getSession.mockResolvedValue(null);
     const res = await updatePageAction(fd({ pageId: "1" }));
     expect(res.success).toBe(false);
+  });
+});
+
+describe("page consent updates", () => {
+  it("saves each page under a separate key and invalidates its public URL", async () => {
+    mocks.getPageById.mockResolvedValueOnce({ id: 1, slug: "ifiscal" });
+    mocks.getPageById.mockResolvedValueOnce({ id: 2, slug: "lotto-labs" });
+    await updatePageAction(fd({ pageId: "1", consentText: "Fiscal consent" }));
+    await updatePageAction(fd({ pageId: "2", consentText: "Lotto consent" }));
+    expect(mocks.updateSetting.mock.calls).toEqual([
+      ["page:1:consentText", "Fiscal consent"],
+      ["page:2:consentText", "Lotto consent"],
+    ]);
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/lotto-labs");
+  });
+
+  it("stores an empty override instead of restoring legacy text", async () => {
+    await updatePageAction(fd({ pageId: "1", consentText: "" }));
+    expect(mocks.updateSetting).toHaveBeenCalledWith("page:1:consentText", "");
+  });
+
+  it("leaves consent alone when another tab is saved", async () => {
+    await updatePageAction(fd({ pageId: "1", title: "New title" }));
+    expect(mocks.updateSetting).not.toHaveBeenCalled();
+  });
+
+  it("rejects oversized consent before writing page data", async () => {
+    const result = await updatePageAction(fd({ pageId: "1", consentText: "x".repeat(501) }));
+    expect(result.success).toBe(false);
+    expect(mocks.updatePage).not.toHaveBeenCalled();
+    expect(mocks.updateSetting).not.toHaveBeenCalled();
+  });
+
+  it("rejects consent updates for a nonexistent page", async () => {
+    mocks.getPageById.mockResolvedValueOnce(null);
+    const result = await updatePageAction(fd({ pageId: "9", consentText: "test" }));
+    expect(result.success).toBe(false);
+    expect(mocks.updateSetting).not.toHaveBeenCalled();
   });
 });
 

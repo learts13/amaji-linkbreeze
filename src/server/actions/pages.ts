@@ -18,8 +18,11 @@ import {
   deletePage as deletePageQuery,
   getDefaultPage,
   getAllPages,
+  getPageById,
+  updateSetting,
 } from "@/server/queries";
 
+import { pageConsentKey } from "@/lib/page-consent";
 
 const slugSchema = z
   .string()
@@ -144,13 +147,21 @@ export async function updatePageAction(formData: FormData): Promise<ActionResult
     }
   }
 
-  await updatePageQuery(pageId, updateData);
+  const rawConsentText = formData.get("consentText");
+  const consentText = z.string().max(500).nullable().safeParse(rawConsentText);
+  if (!consentText.success) {
+    return validationError("Consent text must be 500 characters or less");
+  }
+  // Only the Integration form includes consentText; other forms leave it alone.
+  const page = rawConsentText !== null ? await getPageById(pageId) : null;
+  if (rawConsentText !== null && !page) {
+    return validationError("Page not found");
+  }
 
-  // Save global consent text setting alongside page settings.
-  const consentText = formData.get("consentText");
-  if (consentText !== null) {
-    const { updateSetting } = await import("@/server/queries");
-    await updateSetting("consentText", (consentText as string) || "");
+  await updatePageQuery(pageId, updateData);
+  if (consentText.data !== null) {
+    await updateSetting(pageConsentKey(pageId), consentText.data);
+    revalidatePath(`/${updateData.slug ?? page!.slug}`);
   }
 
   revalidatePath("/links");

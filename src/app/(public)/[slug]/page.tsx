@@ -1,3 +1,4 @@
+import { getPageConsentText } from "@/lib/page-consent";
 import * as React from "react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
@@ -361,7 +362,7 @@ export default async function PublicPage({ params }: PageProps) {
         </div>
 
         {page.emailCapture ? (
-          <EmailCapture consentText={await getSetting("consentText")} />
+          <EmailCapture pageId={page.id} consentText={await getPageConsentText(page.id)} />
         ) : null}
 
         <footer

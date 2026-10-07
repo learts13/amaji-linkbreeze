@@ -1,3 +1,4 @@
+import { getPageConsentText } from "@/lib/page-consent";
 import { QrCode } from "lucide-react";
 import {
   getAllPages,
@@ -52,7 +53,7 @@ export default async function SettingsPage({
     getActiveTheme(),
     isUpdateCheckEnabled(),
     getAnalyticsRetentionDays(),
-    getSetting("consentText"),
+    activePage ? getPageConsentText(activePage.id) : Promise.resolve(null),
     getAllSubscribers(),
     getSetting("searchEngineHidden"),
   ]);
@@ -95,6 +96,7 @@ export default async function SettingsPage({
           ),
           integration: (
             <IntegrationTab
+              key={activePage?.id}
               pageId={activePage?.id}
               slug={slug}
               analyticsScript={activePage?.analyticsScript || ""}

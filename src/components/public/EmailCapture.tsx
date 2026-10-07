@@ -17,7 +17,10 @@ const DEFAULT_CONSENT_TEXT =
  * Pixel classes (lb-pixel-clip, lb-pixel-shadow) apply 8-bit clip-paths
  * when --lb-pixel is "1".
  */
-export function EmailCapture({ consentText }: { consentText?: string | null }) {
+export function EmailCapture({ pageId, consentText }: {
+  pageId: number;
+  consentText?: string | null;
+}) {
   const text = consentText || DEFAULT_CONSENT_TEXT;
   const [pending, startTransition] = React.useTransition();
   const [status, setStatus] = React.useState<"idle" | "success" | "error">("idle");
@@ -50,6 +53,7 @@ export function EmailCapture({ consentText }: { consentText?: string | null }) {
 
   return (
     <form action={handleSubmit} className="mb-2 mt-6 flex flex-col gap-2">
+      <input type="hidden" name="pageId" value={pageId} />
       <div className="flex flex-col gap-2 sm:flex-row">
         <div className="lb-pixel-input-wrap relative flex-1">
           <input

@@ -2,17 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { addSubscriber, getSetting } from "@/server/queries";
+import { addSubscriber, getPageById } from "@/server/queries";
 import {
   type ActionResult,
   validationError,
   rateLimitError,
 } from "@/lib/errors";
 
+import { getPageConsentText } from "@/lib/page-consent";
+
 const DEFAULT_CONSENT_TEXT =
   "I agree to receive emails and understand I can unsubscribe at any time.";
 
 const subscribeSchema = z.object({
+  pageId: z.coerce.number().int().positive(),
   email: z.email("Please enter a valid email").max(320),
   consent: z.string().refine((v) => v === "on" || v === "true", {
     message: "Please accept the consent checkbox to subscribe",
@@ -21,6 +24,7 @@ const subscribeSchema = z.object({
 
 export async function subscribe(formData: FormData): Promise<ActionResult> {
   const parsed = subscribeSchema.safeParse({
+    pageId: formData.get("pageId"),
     email: formData.get("email"),
     consent: (formData.get("consent") as string) || "",
   });
@@ -41,9 +45,13 @@ export async function subscribe(formData: FormData): Promise<ActionResult> {
     return rateLimitError(60);
   }
 
-  // Resolve the consent text from settings (falls back to default).
+  const page = await getPageById(parsed.data.pageId);
+  if (!page || !page.isPublished || !page.emailCapture) {
+    return validationError("Email capture is not available for this page");
+  }
+  // Resolve on the server: never trust consent text submitted by the browser.
   const consentText =
-    (await getSetting("consentText")) || DEFAULT_CONSENT_TEXT;
+    (await getPageConsentText(page.id)) || DEFAULT_CONSENT_TEXT;
 
   try {
     await addSubscriber(parsed.data.email.toLowerCase().trim(), consentText);

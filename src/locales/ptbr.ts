@@ -9,7 +9,7 @@ import type { Messages } from "./en";
 
 const ptbr: Messages = {
   "meta": {
-    "adminTitle": "LinkBreeze — Administração",
+    "adminTitle": "Links Learts - Administração",
     "status": "reviewed"
   },
   "localePicker": {
@@ -40,7 +40,7 @@ const ptbr: Messages = {
     "signOut": "Sair",
     "pagesSection": "Páginas",
     "demoBannerLead": "Demonstração ao vivo.",
-    "demoBannerVisit": "Visitar o LinkBreeze",
+    "demoBannerVisit": "Visitar o Links Learts",
     "demoBannerDeploy": "Instalar sua própria instância",
     "livePreview": "Prévia ao vivo"
   },

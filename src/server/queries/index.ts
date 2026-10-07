@@ -975,9 +975,9 @@ export async function getDashboardStats(
       .orderBy(asc(clickDateExpr));
 
   const viewsMap = new Map<string, number>();
-  for (const r of viewsPerDayRows) viewsMap.set(r.date, Number(r.views));
+  for (const r of viewsPerDayRows) viewsMap.set(String(r.date), Number(r.views));
   const clicksMap = new Map<string, number>();
-  for (const r of clicksPerDayRows) clicksMap.set(r.date, Number(r.clicks));
+  for (const r of clicksPerDayRows) clicksMap.set(String(r.date), Number(r.clicks));
 
   const viewsPerDay = seriesDates.map((date) => ({
     date,
@@ -1116,7 +1116,7 @@ export async function getLinkStats(linkId: number, range: AnalyticsRange = "30d"
     .groupBy(clickDateExpr)
     .orderBy(asc(clickDateExpr));
   const clicksMap = new Map<string, number>();
-  for (const r of perDayRows) clicksMap.set(r.date, Number(r.clicks));
+  for (const r of perDayRows) clicksMap.set(String(r.date), Number(r.clicks));
   const clicksPerDay = seriesDates.map((date) => ({ date, clicks: clicksMap.get(date) ?? 0 }));
 
   const refRows = await db

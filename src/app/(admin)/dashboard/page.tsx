@@ -29,7 +29,6 @@ import {
   getProfile,
   getSetting,
   getSubscriberCount,
-  type AnalyticsRange,
   type BreakdownEntry,
 } from "@/server/queries";
 import { checkForUpdates } from "@/lib/update-check";
@@ -44,16 +43,9 @@ import { ExpandableSection } from "./expandable-section";
 import { getTranslations } from "next-intl/server";
 import { getLocale } from "@/i18n/server";
 import { formatNumber } from "@/i18n/format";
+import { parseRange as parseAnalyticsRange } from "@/lib/analytics-range";
 
 export const dynamic = "force-dynamic";
-
-const VALID_RANGES: AnalyticsRange[] = ["7d", "30d", "90d"];
-
-function parseRange(value?: string): AnalyticsRange {
-  return value && (VALID_RANGES as string[]).includes(value)
-    ? (value as AnalyticsRange)
-    : "7d";
-}
 
 // ── Delta badge ──────────────────────────────────────────────────────────
 
@@ -314,7 +306,7 @@ export default async function DashboardPage({
   searchParams: Promise<{ range?: string; page?: string }>;
 }) {
   const { range: rangeParam, page: pageParam } = await searchParams;
-  const range = parseRange(rangeParam);
+  const range = parseAnalyticsRange(rangeParam ?? null);
 
   const allPages = await getAllPages();
   const activePage =
@@ -414,12 +406,16 @@ export default async function DashboardPage({
             {t("title")}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {retentionDays > 0
-              ? t("subtitleRetention", {
-                  range: range.replace("d", ""),
-                  retention: retentionDays,
-                })
-              : t("subtitle", { range: range.replace("d", "") })}
+            {range === "today"
+              ? retentionDays > 0
+                ? t("subtitleTodayRetention", { retention: retentionDays })
+                : t("subtitleToday")
+              : retentionDays > 0
+                ? t("subtitleRetention", {
+                    range: range.replace("d", ""),
+                    retention: retentionDays,
+                  })
+                : t("subtitle", { range: range.replace("d", "") })}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

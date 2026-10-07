@@ -115,6 +115,9 @@ const en = {
 
     countries: "Countries",
     title: "Dashboard",
+    todayRange: "Today",
+    subtitleToday: "Today's statistics",
+    subtitleTodayRetention: "Today's statistics (data kept {retention} days)",
     subtitle: "Analytics for the last {range} days",
     subtitleRetention: "Analytics for the last {range} days (data kept {retention} days)",
     welcomeTitle: "Welcome to your dashboard",

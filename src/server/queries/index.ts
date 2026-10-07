@@ -829,7 +829,8 @@ export async function recordClick(
 // AnalyticsRange is re-exported from the shared analytics-range module so there
 // is a single source of truth for the type + sinceExpr logic.
 export type { AnalyticsRange } from "@/lib/analytics-range";
-import { sinceExpr, type AnalyticsRange } from "@/lib/analytics-range";
+import { sinceExpr, todayStartExpr, type AnalyticsRange } from "@/lib/analytics-range";
+import { saoPauloDateKey } from "@/lib/timezone";
 
 export interface BreakdownEntry {
   label: string;
@@ -851,7 +852,7 @@ export interface LinkStats {
 
 /** Number of day-buckets to render for a range. */
 async function rangeDayCount(range: AnalyticsRange): Promise<number> {
-  return range === "7d" ? 7 : range === "30d" ? 30 : 90;
+  return range === "today" ? 1 : range === "7d" ? 7 : range === "30d" ? 30 : 90;
 }
 
 /** `days` UTC date keys ending today, for zero-filling a chart series. */
@@ -871,7 +872,9 @@ export async function getDashboardStats(
   pageId?: number,
 ): Promise<DashboardStats> {
   const since = sinceExpr(range);
-  const seriesDates = buildDaySeries(await rangeDayCount(range));
+  const seriesDates = range === "today"
+    ? [saoPauloDateKey()]
+    : buildDaySeries(await rangeDayCount(range));
 
   const pageFilter = pageId !== undefined ? eq(analyticsPageviews.pageId, pageId) : undefined;
   const clickPageFilter = pageId !== undefined
@@ -880,6 +883,12 @@ export async function getDashboardStats(
   // #93: dashboard click metrics count real outbound clicks only — popup
   // opens (event_type='open') must never inflate CTR or top-links.
   const clickOnly = eq(analyticsClicks.eventType, "click");
+  const viewDateExpr = range === "today"
+    ? sql`date(${analyticsPageviews.createdAt}, '-3 hours')`
+    : sql`date(${analyticsPageviews.createdAt})`;
+  const clickDateExpr = range === "today"
+    ? sql`date(${analyticsClicks.createdAt}, '-3 hours')`
+    : sql`date(${analyticsClicks.createdAt})`;
 
   const viewsQuery = pageFilter
     ? db.select({ c: sql<number>`count(*)` }).from(analyticsPageviews).where(and(gt(analyticsPageviews.createdAt, since), pageFilter))
@@ -931,39 +940,39 @@ export async function getDashboardStats(
 
   const viewsPerDayRows = pageFilter
     ? await db.select({
-        date: sql<string>`date(${analyticsPageviews.createdAt})`,
+        date: viewDateExpr,
         views: sql<number>`count(*)`,
       })
       .from(analyticsPageviews)
       .where(and(gt(analyticsPageviews.createdAt, since), pageFilter))
-      .groupBy(sql`date(${analyticsPageviews.createdAt})`)
-      .orderBy(asc(sql`date(${analyticsPageviews.createdAt})`))
+      .groupBy(viewDateExpr)
+      .orderBy(asc(viewDateExpr))
     : await db.select({
-        date: sql<string>`date(${analyticsPageviews.createdAt})`,
+        date: viewDateExpr,
         views: sql<number>`count(*)`,
       })
       .from(analyticsPageviews)
       .where(gt(analyticsPageviews.createdAt, since))
-      .groupBy(sql`date(${analyticsPageviews.createdAt})`)
-      .orderBy(asc(sql`date(${analyticsPageviews.createdAt})`));
+      .groupBy(viewDateExpr)
+      .orderBy(asc(viewDateExpr));
 
   const clicksPerDayRows = clickPageFilter
     ? await db.select({
-        date: sql<string>`date(${analyticsClicks.createdAt})`,
+        date: clickDateExpr,
         clicks: sql<number>`count(*)`,
       })
       .from(analyticsClicks)
       .where(and(gt(analyticsClicks.createdAt, since), clickOnly, clickPageFilter))
-      .groupBy(sql`date(${analyticsClicks.createdAt})`)
-      .orderBy(asc(sql`date(${analyticsClicks.createdAt})`))
+      .groupBy(clickDateExpr)
+      .orderBy(asc(clickDateExpr))
     : await db.select({
-        date: sql<string>`date(${analyticsClicks.createdAt})`,
+        date: clickDateExpr,
         clicks: sql<number>`count(*)`,
       })
       .from(analyticsClicks)
       .where(and(gt(analyticsClicks.createdAt, since), clickOnly))
-      .groupBy(sql`date(${analyticsClicks.createdAt})`)
-      .orderBy(asc(sql`date(${analyticsClicks.createdAt})`));
+      .groupBy(clickDateExpr)
+      .orderBy(asc(clickDateExpr));
 
   const viewsMap = new Map<string, number>();
   for (const r of viewsPerDayRows) viewsMap.set(r.date, Number(r.views));
@@ -989,9 +998,13 @@ export async function getPreviousStats(
   range: AnalyticsRange = "7d",
   pageId?: number,
 ): Promise<{ totalViews: number; totalClicks: number }> {
-  const days = range === "7d" ? 7 : range === "30d" ? 30 : 90;
-  const startShift = sql`datetime('now', ${`-${days * 2} days`})`;
-  const endShift = sql`datetime('now', ${`-${days} days`})`;
+  const days = range === "today" ? 1 : range === "7d" ? 7 : range === "30d" ? 30 : 90;
+  const startShift = range === "today"
+    ? sql`datetime(${todayStartExpr()}, '-1 day')`
+    : sql`datetime('now', ${`-${days * 2} days`})`;
+  const endShift = range === "today"
+    ? todayStartExpr()
+    : sql`datetime('now', ${`-${days} days`})`;
 
   const pageFilter = pageId !== undefined ? eq(analyticsPageviews.pageId, pageId) : undefined;
   const clickPageFilter = pageId !== undefined
@@ -1080,7 +1093,9 @@ export async function getLinkStats(linkId: number, range: AnalyticsRange = "30d"
   if (!link) return null;
 
   const since = sinceExpr(range);
-  const seriesDates = buildDaySeries(await rangeDayCount(range));
+  const seriesDates = range === "today"
+    ? [saoPauloDateKey()]
+    : buildDaySeries(await rangeDayCount(range));
 
   const totalRows = await db
     .select({ c: sql<number>`count(*)` })
@@ -1088,15 +1103,18 @@ export async function getLinkStats(linkId: number, range: AnalyticsRange = "30d"
     .where(and(eq(analyticsClicks.linkId, linkId), gt(analyticsClicks.createdAt, since), eq(analyticsClicks.eventType, "click")));
   const totalClicks = totalRows[0]?.c ?? 0;
 
+  const clickDateExpr = range === "today"
+    ? sql`date(${analyticsClicks.createdAt}, '-3 hours')`
+    : sql`date(${analyticsClicks.createdAt})`;
   const perDayRows = await db
     .select({
-      date: sql<string>`date(${analyticsClicks.createdAt})`,
+      date: clickDateExpr,
       clicks: sql<number>`count(*)`,
     })
     .from(analyticsClicks)
     .where(and(eq(analyticsClicks.linkId, linkId), gt(analyticsClicks.createdAt, since), eq(analyticsClicks.eventType, "click")))
-    .groupBy(sql`date(${analyticsClicks.createdAt})`)
-    .orderBy(asc(sql`date(${analyticsClicks.createdAt})`));
+    .groupBy(clickDateExpr)
+    .orderBy(asc(clickDateExpr));
   const clicksMap = new Map<string, number>();
   for (const r of perDayRows) clicksMap.set(r.date, Number(r.clicks));
   const clicksPerDay = seriesDates.map((date) => ({ date, clicks: clicksMap.get(date) ?? 0 }));

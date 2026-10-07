@@ -26,6 +26,10 @@ describe("parseRange", () => {
     expect(parseRange("90d")).toBe("90d");
   });
 
+  it("returns 'today' for 'today'", () => {
+    expect(parseRange("today")).toBe("today");
+  });
+
   it("falls back to '7d' for removed legacy 'all'", () => {
     expect(parseRange("all")).toBe("7d");
   });
@@ -37,8 +41,8 @@ describe("parseRange", () => {
 });
 
 describe("VALID_RANGES", () => {
-  it("contains 7d, 30d, 90d (no 'all' — data retention makes it meaningless)", () => {
-    expect(VALID_RANGES).toEqual(["7d", "30d", "90d"]);
+  it("contains today, 7d, 30d, 90d (no 'all' — data retention makes it meaningless)", () => {
+    expect(VALID_RANGES).toEqual(["today", "7d", "30d", "90d"]);
   });
 });
 describe("sinceExpr", () => {
@@ -62,5 +66,9 @@ describe("sinceExpr", () => {
   it("returns -90 days for '90d'", () => {
     const expr = sinceExpr("90d");
     expect(expr).toBeDefined();
+  });
+
+  it("returns a start-of-day boundary for today", () => {
+    expect(sinceExpr("today")).toBeDefined();
   });
 });

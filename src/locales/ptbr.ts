@@ -60,7 +60,7 @@ const ptbr: Messages = {
     "thisIsTheOnlyAccount": "Esta é a única conta. Você vai usá-la para gerenciar tudo.",
     "chooseStartingPoint": "Escolha um ponto de partida. Você pode personalizar tudo depois.",
     "importYourExistingPage": "Importar sua página existente",
-    "welcomeTitle": "Boas-vindas ao LinkBreeze",
+    "welcomeTitle": "Boas-vindas ao Links Learts",
     "createAdminTitle": "Crie sua conta de administrador",
     "createAccount": "Criar conta",
     "creatingAccount": "Criando conta…",
@@ -777,7 +777,7 @@ const ptbr: Messages = {
     "fontStoreFailed": "Não foi possível armazenar o arquivo da fonte. Verifique o espaço em disco e as permissões.",
     "fontRestoreFailed": "Não foi possível restaurar o arquivo da fonte incorporada",
     "noBackupFile": "Nenhum arquivo de backup fornecido",
-    "invalidBackup": "Este não é um backup válido do LinkBreeze",
+    "invalidBackup": "Este não é um backup válido do Links Learts",
     "backupMalformedData": "O backup contém dados malformados — as linhas não correspondem à estrutura esperada",
     "backupMalformedSections": "O backup contém seções malformadas",
     "backupMalformedFonts": "O backup contém fontes personalizadas malformadas",
@@ -802,7 +802,7 @@ const ptbr: Messages = {
     "customFont": "Fonte personalizada"
   },
   "update": {
-    "available": "LinkBreeze v{version} está disponível",
+    "available": "Links Learts v{version} está disponível",
     "running": "Você está usando a v{version}",
     "viewReleaseNotes": "Ver notas da versão",
     "checkAgain": "Verificar novamente",

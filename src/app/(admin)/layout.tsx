@@ -85,8 +85,8 @@ export default async function AdminLayout({
           {/* Sidebar — pinned left, full viewport height, sticky while scrolling */}
           <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-sidebar p-4 md:flex md:sticky md:top-0 md:h-dvh md:self-start">
             <div className="mb-8 flex items-center gap-2 px-2">
-              <Image src="/logo-mark.svg" alt="LinkBreeze" width={24} height={24} unoptimized />
-              <span className="font-heading text-lg font-semibold">LinkBreeze</span>
+              <Image src="/logo-mark.svg" alt="Links Learts" width={24} height={24} unoptimized />
+              <span className="font-heading text-lg font-semibold">Links Learts</span>
             </div>
 
             <React.Suspense fallback={null}>

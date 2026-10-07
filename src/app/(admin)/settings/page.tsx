@@ -140,9 +140,10 @@ export default async function SettingsPage({
             <div className="flex flex-col gap-4">
               <MigrationWizard pageId={activePage?.id ?? 0} />
               <SubscribersCard
+                key={activePage?.id ?? "no-page"}
                 subscribers={subscribers}
                 emailCaptureEnabled={activePage?.emailCapture ?? false}
-                pageId={activePage?.id}
+                pageId={activePage?.id ?? 0}
               />
               <DataManager
                 retentionDays={String(retentionDays)}

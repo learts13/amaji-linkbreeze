@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { chartLocaleTag } from "@/app/(admin)/dashboard/views-chart-inner";
+import { formatSubscriberDate } from "@/lib/subscriber-dates";
 import { useRouter } from "next/navigation";
 import { Mail, Download, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -38,23 +39,36 @@ export function SubscribersCard({
   const [clearOpen, setClearOpen] = React.useState(false);
   const [clearPending, setClearPending] = React.useState(false);
   const [clearMsg, setClearMsg] = React.useState<string | null>(null);
+  const [clearFailed, setClearFailed] = React.useState(false);
+  const [deleteTarget, setDeleteTarget] = React.useState<"all" | "selected">("all");
+  const [selectedIds, setSelectedIds] = React.useState<Set<number>>(() => new Set());
+  const selectedCount = selectedIds.size;
+  const allSelected = subscribers.length > 0 && subscribers.every((s) => selectedIds.has(s.id));
 
   if (!emailCaptureEnabled) return null;
 
-  const handleClear = async () => {
+  const handleDelete = async () => {
     setClearOpen(false);
     setClearPending(true);
     setClearMsg(null);
+    setClearFailed(false);
     try {
-      const res = await fetch(`/api/subscribers/clear?pageId=${pageId}`, { method: "DELETE" });
+      const res = await fetch(`/api/subscribers/clear?pageId=${pageId}`, {
+        method: "DELETE",
+        headers: deleteTarget === "selected" ? { "Content-Type": "application/json" } : undefined,
+        body: deleteTarget === "selected" ? JSON.stringify({ ids: [...selectedIds] }) : undefined,
+      });
       if (res.ok) {
-        setClearMsg("All subscribers cleared.");
+        setClearMsg(deleteTarget === "selected" ? t("selectedSubscribersDeleted") : t("allSubscribersCleared"));
+        setSelectedIds(new Set());
         router.refresh();
       } else {
-        setClearMsg("Failed to clear subscribers.");
+        setClearMsg(t("subscriberDeleteFailed"));
+        setClearFailed(true);
       }
     } catch {
-      setClearMsg("Failed to clear subscribers.");
+      setClearMsg(t("subscriberDeleteFailed"));
+      setClearFailed(true);
     } finally {
       setClearPending(false);
     }
@@ -77,6 +91,16 @@ export function SubscribersCard({
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
+                  <th className="w-10 px-3 py-2 text-left font-medium">
+                    <input
+                      type="checkbox"
+                      checked={allSelected}
+                      aria-label={t("selectAllSubscribers")}
+                      onChange={(event) => setSelectedIds(
+                        event.target.checked ? new Set(subscribers.map((s) => s.id)) : new Set(),
+                      )}
+                    />
+                  </th>
                   <th className="px-3 py-2 text-left font-medium">{t("colEmail")}</th>
                   <th className="px-3 py-2 text-left font-medium">{t("colSubscribed")}</th>
                   <th className="px-3 py-2 text-left font-medium">{t("colConsent")}</th>
@@ -85,13 +109,22 @@ export function SubscribersCard({
               <tbody>
                 {subscribers.map((s) => (
                   <tr key={s.id} className="border-t border-border">
+                    <td className="w-10 px-3 py-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(s.id)}
+                        aria-label={`${t("selectSubscriber")} ${s.email}`}
+                        onChange={(event) => setSelectedIds((current) => {
+                          const next = new Set(current);
+                          if (event.target.checked) next.add(s.id);
+                          else next.delete(s.id);
+                          return next;
+                        })}
+                      />
+                    </td>
                     <td className="px-3 py-2">{s.email}</td>
                     <td className="px-3 py-2 text-muted-foreground">
-                      {new Date(s.createdAt).toLocaleDateString(chartLocaleTag(locale), {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
+                      {formatSubscriberDate(s.createdAt, chartLocaleTag(locale))}
                     </td>
                     <td className="px-3 py-2 text-muted-foreground">
                       {s.consentAt ? t("consentYes") : t("notAvailable")}
@@ -112,11 +145,29 @@ export function SubscribersCard({
             className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-muted"
           >
             <Download className="size-4" />{t("exportCsv")}</a>
+          {selectedCount > 0 ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setDeleteTarget("selected");
+                setClearOpen(true);
+              }}
+              disabled={clearPending}
+              className="text-destructive hover:text-destructive"
+            >
+              <Trash2 className="size-4" />
+              {t("deleteSelected", { count: selectedCount })}
+            </Button>
+          ) : null}
           {subscribers.length > 0 ? (
             <Button
               type="button"
               variant="outline"
-              onClick={() => setClearOpen(true)}
+              onClick={() => {
+                setDeleteTarget("all");
+                setClearOpen(true);
+              }}
               disabled={clearPending}
               className="text-destructive hover:text-destructive"
             >
@@ -126,7 +177,7 @@ export function SubscribersCard({
           ) : null}
         </div>
         {clearMsg ? (
-          <p className={clearMsg.includes("cleared") ? "text-sm text-success" : "text-sm text-destructive"}>
+          <p className={clearFailed ? "text-sm text-destructive" : "text-sm text-success"}>
             {clearMsg}
           </p>
         ) : null}
@@ -135,14 +186,18 @@ export function SubscribersCard({
       <Dialog open={clearOpen} onOpenChange={setClearOpen}>
         <DialogContent showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle>{t("clearTitle")}</DialogTitle>
+            <DialogTitle>{deleteTarget === "selected" ? t("deleteSelectedTitle") : t("clearTitle")}</DialogTitle>
             <DialogDescription>
-              {t("deleteConfirmIcu", { count: subscribers.length })}
+              {deleteTarget === "selected"
+                ? t("deleteConfirmSelected", { count: selectedCount })
+                : t("deleteConfirmIcu", { count: subscribers.length })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" type="button" onClick={() => setClearOpen(false)}>{t("cancel")}</Button>
-            <Button variant="destructive" type="button" onClick={handleClear}>{t("clear")}</Button>
+            <Button variant="destructive" type="button" onClick={handleDelete}>
+              {deleteTarget === "selected" ? t("deleteAction") : t("clear")}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

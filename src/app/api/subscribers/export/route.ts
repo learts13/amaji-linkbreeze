@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getAllSubscribers, getPageById } from "@/server/queries";
+import { formatSubscriberCsvTimestamp, saoPauloCalendarDate } from "@/lib/subscriber-dates";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,13 +27,13 @@ export async function GET(request: Request) {
 
   const rows = await getAllSubscribers(pageId);
   const lines = rows.map((r) =>
-    [r.email, r.createdAt, r.consentAt ?? "", r.consentText ?? ""]
+    [r.email, formatSubscriberCsvTimestamp(r.createdAt), formatSubscriberCsvTimestamp(r.consentAt), r.consentText ?? ""]
       .map(csvCell)
       .join(","),
   );
 
   const csv = [CSV_HEADER.join(","), ...lines].join("\n");
-  const today = new Date().toISOString().slice(0, 10);
+  const today = saoPauloCalendarDate(new Date());
 
   return new NextResponse(csv, {
     headers: {

@@ -20,6 +20,7 @@ import {
   or,
   lt,
   gt,
+  inArray,
   asc,
   desc,
   isNull,
@@ -1146,4 +1147,9 @@ export async function getAllSubscribers(pageId: number): Promise<SubscriberRow[]
 
 export async function clearSubscribers(pageId: number): Promise<void> {
   db.delete(subscribers).where(eq(subscribers.pageId, pageId)).run();
+}
+
+export async function deleteSubscribers(ids: number[], pageId: number): Promise<void> {
+  if (ids.length === 0) return;
+  await db.delete(subscribers).where(and(eq(subscribers.pageId, pageId), inArray(subscribers.id, ids)));
 }

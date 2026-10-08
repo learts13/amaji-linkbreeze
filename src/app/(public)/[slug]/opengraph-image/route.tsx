@@ -23,7 +23,7 @@ export async function GET(
     getActiveTheme(),
   ]);
 
-  const name = page?.title || "LinkBreeze";
+  const name = page?.title || "Links Learts";
   const bio = page?.bio || "All my links in one place";
   const textColor = theme?.textColor || "#eceafe";
   const primary = theme?.primaryColor || "#533fd6";
@@ -105,7 +105,7 @@ export async function GET(
               marginRight: 16,
             }}
           />
-          LinkBreeze
+          Links Learts
         </div>
       </div>
     ),

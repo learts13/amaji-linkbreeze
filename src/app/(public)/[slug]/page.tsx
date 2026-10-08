@@ -68,7 +68,7 @@ export async function generateMetadata({
   if (!page) return { title: "Page not found" };
 
   const title =
-    page.seoTitle || page.title || "LinkBreeze";
+    page.seoTitle || page.title || "Links Learts";
   const description = page.seoDescription || page.bio || "My links";
   const origin = await getOrigin();
   const url = `${origin}/${slug}`;

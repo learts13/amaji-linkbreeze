@@ -306,7 +306,7 @@ export default async function DashboardPage({
   searchParams: Promise<{ range?: string; page?: string }>;
 }) {
   const { range: rangeParam, page: pageParam } = await searchParams;
-  const range = parseAnalyticsRange(rangeParam ?? null);
+  const range = parseAnalyticsRange(rangeParam ?? "today");
 
   const allPages = await getAllPages();
   const activePage =
